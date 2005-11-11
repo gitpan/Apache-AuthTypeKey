@@ -1,4 +1,4 @@
-# $Id: Makefile.PL,v 1.2 2004/08/24 16:39:50 btrott Exp $
+# $Id: Makefile.PL 1888 2005-11-10 20:38:14Z btrott $
 
 use inc::Module::Install;
 
@@ -13,7 +13,7 @@ sign(1);
 include('ExtUtils::AutoInstall');
 
 requires('Authen::TypeKey' => 0.02);
-requires('Apache::AuthCookie' => 3.04);
+requires('Apache::AuthCookie' => 3.08);
 
 auto_include();
 auto_install();

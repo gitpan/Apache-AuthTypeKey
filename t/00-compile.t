@@ -1,4 +1,4 @@
-# $Id: 00-compile.t,v 1.1.1.1 2004/08/20 18:23:57 btrott Exp $
+# $Id: 00-compile.t 5 2004-08-20 18:23:55Z btrott $
 
 my $loaded;
 BEGIN { print "1..1\n" }

@@ -1,4 +1,4 @@
-$Id: README,v 1.2 2004/08/21 08:36:19 btrott Exp $
+$Id: README 12 2004-08-21 08:36:19Z btrott $
 
 This is Apache::AuthTypeKey, an implementation of TypeKey authentication and
 authorization for Apache.

@@ -1,14 +1,25 @@
-# $Id: AuthTypeKey.pm,v 1.4 2004/08/24 16:39:40 btrott Exp $
+# $Id: AuthTypeKey.pm 1887 2005-11-10 20:37:21Z btrott $
 
 package Apache::AuthTypeKey;
 use strict;
 
-use Authen::TypeKey;
-use Apache::Constants qw( REDIRECT SERVER_ERROR );
-use base qw( Apache::AuthCookie );
-use vars qw( $VERSION );
+our $VERSION = '0.03';
 
-$VERSION = '0.01';
+use Authen::TypeKey;
+use mod_perl;
+use constant MP2 => $mod_perl::VERSION >= 1.99;
+BEGIN {
+    require base;
+    if (MP2) {
+        require Apache2::Const;
+        Apache2::Const->import(-compile => qw( SERVER_ERROR ));
+        base->import(qw( Apache2::AuthCookie ));
+    } else {
+        require Apache::Constants;
+        Apache::Constants->import(qw( SERVER_ERROR ));
+        base->import(qw( Apache::AuthCookie ));
+    }
+}
 
 sub authen_cred {
     my($self, $r, @cred) = @_;
@@ -35,7 +46,7 @@ sub authen_ses_key {
     my $token = $r->dir_config('TypeKeyToken');
     unless ($token) {
         $r->log_reason('TypeKeyToken is required');
-        return SERVER_ERROR;
+        return MP2 ? Apache::SERVER_ERROR() : Apache::Constants::SERVER_ERROR();
     }
     my $tk = Authen::TypeKey->new;
     $tk->token($token);
@@ -51,7 +62,7 @@ sub authen_ses_key {
 ## 1. Authen::TypeKey currently expects a Query-type object.
 ## 2. Apache->args breaks on '=' signs in the key/value pairs.
 package Apache::AuthTypeKey::Query;
-use Apache::Util qw( escape_uri unescape_uri );
+use URI::Escape qw( uri_escape uri_unescape );
 
 sub new {
     my $class = shift;
@@ -59,7 +70,7 @@ sub new {
     my %p;
     for my $p (split /&/, $key) {
         my($k, $v) = split /=/, $p, 2;
-        $p{unescape_uri($k)} = unescape_uri($v);
+        $p{uri_unescape($k)} = uri_unescape($v);
     }
     bless \%p, $class;
 }
@@ -71,7 +82,7 @@ sub as_string {
     my $q = shift;
     my @s;
     while (my($k, $v) = each %$q) {
-        push @s, escape_uri($k) . '=' . escape_uri($v);
+        push @s, uri_escape($k) . '=' . uri_escape($v);
     }
     join '&', @s;
 }
